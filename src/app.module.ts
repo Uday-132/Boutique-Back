@@ -5,6 +5,7 @@ import { OrdersModule } from './orders/orders.module';
 import { TryOnModule } from './tryon/tryon.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PrismaService } from './prisma.service';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PrismaService } from './prisma.service';
     TryOnModule,
     NotificationsModule,
   ],
+  controllers: [AppController],
   providers: [PrismaService],
   exports: [PrismaService],
 })

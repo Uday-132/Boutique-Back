@@ -14,6 +14,7 @@ const orders_module_1 = require("./orders/orders.module");
 const tryon_module_1 = require("./tryon/tryon.module");
 const notifications_module_1 = require("./notifications/notifications.module");
 const prisma_service_1 = require("./prisma.service");
+const app_controller_1 = require("./app.controller");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -26,6 +27,7 @@ exports.AppModule = AppModule = __decorate([
             tryon_module_1.TryOnModule,
             notifications_module_1.NotificationsModule,
         ],
+        controllers: [app_controller_1.AppController],
         providers: [prisma_service_1.PrismaService],
         exports: [prisma_service_1.PrismaService],
     })

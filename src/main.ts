@@ -16,7 +16,7 @@ async function bootstrap() {
   });
 
   // Global prefix for clean API path structures
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', { exclude: ['/'] });
 
   if (process.env.VERCEL) {
     await app.init();

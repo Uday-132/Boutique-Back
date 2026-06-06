@@ -8,9 +8,11 @@ const server = express();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
-  // Enable Cross-Origin Resource Sharing for admin web and mobile clients
+  // Enable Cross-Origin Resource Sharing dynamically to allow credentials: true
   app.enableCors({
-    origin: '*',
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      callback(null, true);
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

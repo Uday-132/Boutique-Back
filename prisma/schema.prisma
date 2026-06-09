@@ -42,7 +42,9 @@ model User {
   cart          Cart?
   reviews       Review[]
   tryOns        VirtualTryOn[]
-  notifications Notification[]
+  notifications      Notification[]
+  pendingOrdersCount Int            @default(0)
+  bookedOrdersCount  Int            @default(0)
 }
 
 model Address {

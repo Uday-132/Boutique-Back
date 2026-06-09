@@ -224,6 +224,16 @@ export class OrdersService {
       where: { cartId: cart.id },
     });
 
+    // Increment user's pendingOrdersCount in the database
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        pendingOrdersCount: {
+          increment: 1,
+        },
+      },
+    });
+
     // Reduce inventory stocks
     for (const item of cart.items) {
       await this.prisma.inventory.updateMany({
@@ -277,11 +287,39 @@ export class OrdersService {
   }
 
   async updateOrderStatus(orderId: string, status: any) {
+    const oldOrder = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      select: { status: true, userId: true },
+    });
+
+    if (!oldOrder) {
+      throw new NotFoundException('Order not found or has been deleted');
+    }
+
     const order = await this.prisma.order.update({
       where: { id: orderId },
       data: { status },
       include: { user: true },
     });
+
+    // Handle user counters when status changes from/to PENDING
+    if (oldOrder.status === 'PENDING' && status !== 'PENDING') {
+      await this.prisma.user.update({
+        where: { id: oldOrder.userId },
+        data: {
+          pendingOrdersCount: { decrement: 1 },
+          bookedOrdersCount: { increment: 1 },
+        },
+      });
+    } else if (oldOrder.status !== 'PENDING' && status === 'PENDING') {
+      await this.prisma.user.update({
+        where: { id: oldOrder.userId },
+        data: {
+          pendingOrdersCount: { increment: 1 },
+          bookedOrdersCount: { decrement: 1 },
+        },
+      });
+    }
 
     // Send push notification log triggers
     await this.prisma.notification.create({

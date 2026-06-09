@@ -129,10 +129,32 @@ export class AuthService {
   }
 
   async getProfile(userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, email: true, name: true, phone: true, role: true, createdAt: true },
+    const orders = await this.prisma.order.findMany({
+      where: { userId },
+      select: { status: true },
     });
+
+    const pending = orders.filter((o) => o.status === 'PENDING').length;
+    const booked = orders.filter((o) => o.status !== 'PENDING').length;
+
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        pendingOrdersCount: pending,
+        bookedOrdersCount: booked,
+      },
+      select: { 
+        id: true, 
+        email: true, 
+        name: true, 
+        phone: true, 
+        role: true, 
+        createdAt: true,
+        pendingOrdersCount: true,
+        bookedOrdersCount: true,
+      },
+    });
+
     if (!user) {
       throw new UnauthorizedException('User not found');
     }

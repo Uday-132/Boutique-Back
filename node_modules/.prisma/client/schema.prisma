@@ -19,6 +19,7 @@ enum OrderStatus {
   PACKED
   SHIPPED
   DELIVERED
+  CANCELLED
 }
 
 enum TryOnStatus {
